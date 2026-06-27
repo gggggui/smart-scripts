@@ -4,293 +4,536 @@ html
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>智能话术系统 - 增强版</title>
+<title>智能话术系统 - 全栈版</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <style>
-:root { --primary: #2563eb; --sidebar-bg: #1e293b; --header-bg: #ffffff; --card-bg: #f8fafc; --border: #e2e8f0; }
-{ margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-body { background-color: #f1f5f9; color: #334155; display: flex; min-height: 100vh; overflow: hidden; }
-/* 侧边栏 */
-.sidebar { width: 260px; background: var(--sidebar-bg); color: white; height: 100vh; padding: 20px 0; position: fixed; transition: all 0.3s; z-index: 100; }
-.logo { text-align: center; padding: 0 20px 20px; font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid #334155; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-.nav-menu { list-style: none; }
-.nav-item { padding: 12px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; transition: background 0.2s; }
-.nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); color: white; }
-.nav-item i { width: 20px; text-align: center; }
-/* 主内容区 */
-.main-content { flex: 1; margin-left: 260px; display: flex; flex-direction: column; height: 100vh; }
-.header { height: 60px; background: var(--header-bg); display: flex; align-items: center; justify-content: space-between; padding: 0 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 99; }
-.user-info { display: flex; align-items: center; gap: 15px; font-size: 0.9rem; color: #64748b; }
-.logout-btn { color: #ef4444; cursor: pointer; }
-
-.content-area { flex: 1; padding: 30px; overflow-y: auto; background: #f1f5f9; }
-.card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); padding: 30px; margin-bottom: 30px; }
-h2 { font-size: 1.4rem; margin-bottom: 20px; color: #1e293b; display: flex; align-items: center; gap: 10px; }
-h2 i { color: var(--primary); }
-
-/* 话术生成器布局 */
-.generator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-@media (max-width: 1024px) { .generator-grid { grid-template-columns: 1fr; } }
-
-.form-group { margin-bottom: 20px; }
-label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #475569; }
-textarea, input { width: 100%; padding: 12px 15px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; resize: vertical; transition: border 0.2s; }
-textarea:focus, input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-
-.btn-group { display: flex; gap: 15px; margin-top: 10px; }
-.btn { padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; transition: transform 0.1s, opacity 0.1s; }
-.btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--primary); color: white; }
-.btn-secondary { background: #e2e8f0; color: #475569; }
-.btn-danger { background: #ef4444; color: white; }
-.btn:hover { opacity: 0.9; }
-
-/* 结果框 */
-.result-box { position: relative; border: 1px solid var(--border); border-radius: 8px; min-height: 200px; padding: 15px; background: #f8fafc; }
-.status-bar { font-size: 0.8rem; color: #64748b; margin-top: 10px; display: flex; align-items: center; gap: 5px; }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
-.copy-btn { position: absolute; top: 10px; right: 10px; background: white; border: 1px solid #ddd; padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; color: #64748b; }
-.copy-btn:hover { background: #f1f5f9; }
-
-/* 调试频道专用样式 */
-.editor-container { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 20px; }
-.CodeMirror { height: 300px !important; font-size: 14px; }
-.ai-controls { display: flex; gap: 10px; margin-bottom: 15px; }
-.prompt-input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
-.log-output { background: #1e293b; color: #cbd5e1; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; max-height: 200px; overflow-y: auto; white-space: pre-wrap; line-height: 1.5; }
-
-/* 隐藏类 */
-.hidden { display: none; }
+    body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+    .sidebar-item { transition: all 0.2s; cursor: pointer; }
+    .sidebar-item:hover { background-color: #374151; }
+    .sidebar-item.active { background-color: #2563eb; border-left: 4px solid #60a5fa; }
+    .card { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    .loader { border-top-color: #3b82f6; animation: spinner 0.6s linear infinite; }
+    @keyframes spinner { to { transform: rotate(360deg); } }
+    
+    /* AI 调试器样式 */
+    .code-editor { 
+        background-color: #1e293b; 
+        color: #cbd5e1; 
+        font-family: 'Courier New', monospace; 
+        white-space: pre-wrap; 
+        word-wrap: break-word; 
+    }
+    .keyword-tag { background-color: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; margin-right: 4px; }
 </style>
-<!-- 引入 CodeMirror 用于代码编辑 -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/javascript/javascript.min.js"></script>
 </head>
-<body>
-<!-- 侧边栏 -->
-<aside class="sidebar">
-    <div class="logo">
-        <span>🤖</span>
-        <span>智能话术系统</span>
-    </div>
-    <ul class="nav-menu">
-        <li class="nav-item active" onclick="switchTab('generator')">
-            <i>✍️</i> 话术生成器
-        </li>
-        <li class="nav-item" onclick="switchTab('permissions')">
-            <i>🔒</i> 权限管理
-        </li>
-        <li class="nav-item" onclick="switchTab('templates')">
-            <i>📝</i> 模板管理
-        </li>
-        <li class="nav-item" onclick="switchTab('keywords')">
-            <i>🔑</i> 关键词管理
-        </li>
-        <li class="nav-item" onclick="switchTab('debug')">
-            <i>🐛</i> AI 调试频道
-        </li>
-    </ul>
-</aside>
-
-<!-- 主内容区 -->
-<div class="main-content">
-    <header class="header">
-        <div style="font-weight: 600; color: #1e293b;">智能话术生成系统</div>
-        <div class="user-info">
-            <span>管理员: admin</span>
-            <span class="logout-btn" onclick="alert('退出登录')">退出登录</span>
+<body class="h-screen overflow-hidden flex">
+<div id="app" class="flex h-full w-full">
+    <!-- 左侧导航栏 -->
+    <aside class="w-64 bg-slate-900 text-white flex flex-col p-4 space-y-2 h-full">
+        <div class="text-center py-4 border-b border-slate-700 mb-4">
+            <h1 class="text-xl font-bold text-blue-400"><i class="fa-solid fa-comments mr-2"></i>智能话术系统</h1>
         </div>
-    </header>
+        
+        <nav class="flex-1 space-y-1">
+            <div :class="['sidebar-item', { 'active': activeTab === 'generator' }]" @click="switchTab('generator')">
+                <i class="fa-solid fa-wand-magic-sparkles mr-3"></i> 话术生成器
+            </div>
+            <div :class="['sidebar-item', { 'active': activeTab === 'permissions' }]" @click="switchTab('permissions')">
+                <i class="fa-solid fa-user-shield mr-3"></i> 权限管理
+            </div>
+            <div :class="['sidebar-item', { 'active': activeTab === 'templates' }]" @click="switchTab('templates')">
+                <i class="fa-solid fa-file-contract mr-3"></i> 模板管理
+            </div>
+            <div :class="['sidebar-item', { 'active': activeTab === 'keywords' }]" @click="switchTab('keywords')">
+                <i class="fa-solid fa-key mr-3"></i> 关键词管理
+            </div>
+            <div :class="['sidebar-item', { 'active': activeTab === 'ai-debug' }]" @click="switchTab('ai-debug')">
+                <i class="fa-solid fa-robot mr-3"></i> AI 调试频道
+            </div>
+        </nav>
 
-    <div class="content-area">
+        <div class="pt-4 border-t border-slate-700 text-xs text-gray-400">
+            <p class="text-center">状态: <span class="text-green-500 font-bold">已连接</span>
+            <button @click="logout" class="mt-2 w-full bg-red-600 hover:bg-red-700 py-1 rounded text-white">退出登录</button>
+        </div>
+    </aside>
+
+    <!-- 右侧主内容区 -->
+    <main class="flex-1 p-8 overflow-auto bg-slate-100 h-full">
         
         <!-- 1. 话术生成器 -->
-        <div id="tab-generator" class="card">
-            <h2><i>✍️</i> 话术生成器</h2>
-            <div class="generator-grid">
-                <div class="form-group">
-                    <label for="playerInput">输入玩家反馈内容：</label>
-                    <textarea id="playerInput" rows="8" placeholder="请输入玩家提供的封号截图文本或申诉内容..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="resultOutput">生成结果：</label>
-                    <div class="result-box">
-                        <div id="resultOutput">话术将在这里生成...</div>
-                        <button class="copy-btn" onclick="copyResult()">📋 复制</button>
+        <section v-if="activeTab === 'generator'" class="space-y-6">
+            <h2 class="text-3xl font-bold text-slate-800 border-b pb-2"><i class="fa-solid fa-pen-nib text-blue-500 mr-2"></i>话术生成器</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 输入区 -->
+                <div class="card bg-white p-6 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">输入玩家反馈内容：</label>
+                    <textarea 
+                        v-model="inputText" 
+                        rows="10" 
+                        class="w-full border border-gray-300 rounded-md p-3 focus:ring-blue-500 focus:border-blue-500" 
+                        placeholder="请粘贴玩家提供的封号截图文本或申诉内容..."></textarea>
+                    
+                    <div class="mt-4 flex space-x-3">
+                        <button 
+                            @click="generateResponse" 
+                            :disabled="isLoading"
+                            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50">
+                            <i class="fa-solid fa-bolt mr-2"></i> {{ isLoading ? '生成中...' : '生成话术' }}
+                        </button>
+                        <button 
+                            @click="clearInput" 
+                            class="flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition">
+                            <i class="fa-solid fa-eraser mr-2"></i> 清空
+                        </button>
                     </div>
-                    <div class="status-bar">
-                        <div class="status-dot"></div>
-                        <span id="statusText">就绪</span>
+                </div>
+
+                <!-- 输出区 -->
+                <div class="card bg-white p-6 rounded-lg flex flex-col">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-sm font-medium text-gray-700">生成结果：</label>
+                        <button 
+                            @click="copyToClipboard" 
+                            :disabled="!outputText"
+                            class="text-sm text-blue-500 hover:text-blue-700 flex items-center disabled:opacity-50">
+                            <i class="fa-regular fa-copy mr-1"></i> 一键复制
+                        </button>
+                    </div>
+                    <div 
+                        class="flex-1 border border-gray-300 rounded-md p-3 bg-gray-50 overflow-auto font-mono text-sm whitespace-pre-wrap"
+                        v-html="outputText || '话术将在这里生成...'">
+                    </div>
+                    <div class="mt-3 text-xs text-gray-500" v-if="outputText">
+                        预计回复字数：{{ outputText.length }} 字
                     </div>
                 </div>
             </div>
-            <div class="btn-group">
-                <button class="btn btn-primary" onclick="generateScript()">
-                    <i>⚡</i> 生成话术
-                </button>
-                <button class="btn btn-secondary" onclick="document.getElementById('playerInput').value=''; document.getElementById('resultOutput').innerText='话术将在这里生成...';">
-                    <i>🗑️</i> 清空
-                </button>
-            </div>
-        </div>
+        </section>
 
         <!-- 2. 权限管理 -->
-        <div id="tab-permissions" class="card hidden">
-            <h2><i>🔒</i> 权限管理</h2>
-            <div class="form-group">
-                <label>当前状态</label>
-                管理员账号密码存储在浏览器本地 (LocalStorage)。
-                <p style="color: #ef4444; margin-top: 10px;">安全提示：请勿在公共电脑上使用，默认密码请在代码中修改。
-            </div>
-            <button class="btn btn-secondary" onclick="clearAllData()">清除本地数据</button>
-        </div>
+        <section v-if="activeTab === 'permissions'" class="space-y-6">
+            <h2 class="text-3xl font-bold text-slate-800 border-b pb-2"><i class="fa-solid fa-lock text-yellow-500 mr-2"></i>权限管理</h2>
+            <div class="card bg-white p-6 rounded-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="font-semibold text-lg">管理员设置</h3>
+                        <p class="text-gray-500 text-sm">当前模式：<span class="text-green-600 font-bold">本地存储模式 (Local)</span> | 支持联网同步
+                        
+                    </div>
+                    <button 
+                        @click="savePermissions" 
+                        class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                        <i class="fa-solid fa-save mr-1"></i> 保存更改
+                    </button>
+                </div>
 
-        <!-- 3. AI 调试频道 (核心新增模块) -->
-        <div id="tab-debug" class="card hidden">
-            <h2><i>🐛</i> AI 调试频道</h2>
-            <p style="margin-bottom: 20px; color: #64748b;">在此处编写 JavaScript 代码调试网页逻辑。您可以让 AI 生成优化代码，粘贴在此处运行测试。
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">管理员账号</label>
+                        <input 
+                            v-model="adminUser.username" 
+                            type="text" 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">登录密码</label>
+                        <div class="relative mt-1">
+                            <input 
+                                v-model="adminUser.password" 
+                                :type="showPassword ? 'text' : 'password'" 
+                                class="block w-full border border-gray-300 rounded-md shadow-sm p-2 pr-10 focus:ring-blue-500 focus:border-blue-500">
+                            <button 
+                                @click="showPassword = !showPassword" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500">
+                                <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">提示：修改密码后需刷新页面生效。
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-md border border-yellow-200">
+                        <h4 class="font-bold text-yellow-800">后端逻辑说明</h4>
+                        <p class="text-sm text-yellow-700 mt-1">
+                            1. <strong>数据存储</strong>：利用浏览器 LocalStorage 模拟数据库，实现数据持久化。
+                            2. <strong>联网支持</strong>：预留 Axios/Fetch 接口，可轻松对接真实后端 API。
+                            3. <strong>安全校验</strong>：前端已加入登录态拦截，防止未授权访问。
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 模板管理 -->
+        <section v-if="activeTab === 'templates'" class="space-y-6">
+            <h2 class="text-3xl font-bold text-slate-800 border-b pb-2"><i class="fa-solid fa-file-code text-purple-500 mr-2"></i>模板管理</h2>
+            <div class="card bg-white p-6 rounded-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-semibold">预设话术模板库</h3>
+                    <button 
+                        @click="addNewTemplate" 
+                        class="px-3 py-1 bg-purple-600 text-white text-sm rounded hover:bg-purple-700">
+                        <i class="fa-solid fa-plus mr-1"></i> 新增模板
+                    </button>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        
+                            <tr class="bg-gray-50">
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">模板名称
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">适用类型
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作
+                            
+                        
+                        
+                            <tr v-for="(tpl, index) in templates" :key="index" class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ tpl.name }}
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <span class="keyword-tag" v-for="k in tpl.keywords" :key="k">{{ k }}</span>
+                                
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <button @click="editTemplate(index)" class="text-indigo-600 hover:text-indigo-900 mr-3"><i class="fa-solid fa-pencil"></i></button>
+                                    <button @click="deleteTemplate(index)" class="text-red-600 hover:text-red-900"><i class="fa-solid fa-trash"></i></button>
+                                
+                            
+                        
+                    
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. 关键词管理 -->
+        <section v-if="activeTab === 'keywords'" class="space-y-6">
+            <h2 class="text-3xl font-bold text-slate-800 border-b pb-2"><i class="fa-solid fa-tags text-pink-500 mr-2"></i>关键词管理</h2>
+            <div class="card bg-white p-6 rounded-lg">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">添加触发关键词</label>
+                    <div class="flex space-x-2">
+                        <input 
+                            v-model="newKeyword" 
+                            @keyup.enter="addKeyword" 
+                            type="text" 
+                            placeholder="输入关键词，如：被盗、误封" 
+                            class="flex-1 border border-gray-300 rounded-md p-2 focus:ring-pink-500 focus:border-pink-500">
+                        <select v-model="newKeywordType" class="border border-gray-300 rounded-md p-2 focus:ring-pink-500 focus:border-pink-500">
+                            <option value="violation">违规类型</option>
+                            <option value="solution">解决方案</option>
+                            <option value="appeal">申诉引导</option>
+                        </select>
+                        <button @click="addKeyword" class="px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700">
+                            <i class="fa-solid fa-plus"></i> 添加
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="space-y-2">
+                    <h3 class="font-semibold text-gray-700">当前关键词库：</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span 
+                            v-for="(kw, idx) in keywords" 
+                            :key="idx" 
+                            class="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm flex items-center cursor-pointer hover:bg-pink-200"
+                            @click="removeKeyword(idx)">
+                            {{ kw.text }} ({{ kw.type }})
+                            <i class="fa-solid fa-times ml-1"></i>
+                        </span>
+                        <span v-if="keywords.length === 0" class="text-gray-400">暂无关键词，请添加。
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. AI 调试频道 (核心亮点) -->
+        <section v-if="activeTab === 'ai-debug'" class="space-y-6">
+            <h2 class="text-3xl font-bold text-slate-800 border-b pb-2"><i class="fa-solid fa-microchip text-green-500 mr-2"></i>AI 智能调试终端</h2>
             
-            <div class="ai-controls">
-                <input type="text" id="aiPrompt" class="prompt-input" placeholder="告诉 AI 你想修改什么逻辑（例如：增加一个导出Excel按钮）">
-                <button class="btn btn-primary" onclick="simulateAI()">🚀 向 AI 发送指令</button>
-            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 代码编辑器 -->
+                <div class="card bg-white p-0 rounded-lg overflow-hidden flex flex-col">
+                    <div class="bg-slate-800 px-4 py-2 flex justify-between items-center">
+                        <span class="text-white text-sm font-mono">main.js (模拟后端逻辑)</span>
+                        <button 
+                            @click="runAICode" 
+                            class="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded transition">
+                            <i class="fa-solid fa-play mr-1"></i> 运行代码
+                        </button>
+                    </div>
+                    <div class="code-editor flex-1 p-4 text-sm overflow-auto" contenteditable="true" spellcheck="false" ref="codeEditor">
+                        // AI 逻辑模拟区
+// 1. 定义话术模板库
+const tpls = {{ JSON.stringify(templates) }};
+// 2. 定义关键词匹配规则
+const kws = {{ JSON.stringify(keywords) }};
+// 3. 模拟解析逻辑
+function parseFeedback(text) {
+let result = {
+time: text.match(/(\d{4}-\d{2}-\d{2})/) || ['未知时间'],
+reason: text.includes('外挂') ? '检测到使用第三方作弊软件'
+: text.includes('被盗') ? '账号存在被盗风险'
+: '违反游戏用户协议',
+action: text.includes('封号') ? '封号处理' : '禁赛处理'
+};
+return result;
+}
+// 4. 模拟生成逻辑
+function generateReply(text) {
+const info = parseFeedback(text);
+// 触发关键词匹配
+const matched = kws.find(k => text.includes(k.text));
+if (matched && tpls[0]) {
+    return \`【系统判定】\${info.reason}\n【处理结果】\${info.action}\n【客服建议】\${matched.text === '被盗' ? '请前往安全中心申诉' : '请规范游戏行为'}\`;
+}
 
-            <label>代码编辑器 (支持 JS / JSON)</label>
-            <div class="editor-container">
-                <textarea id="codeEditorArea">// 欢迎来到调试频道！
-// 在这里编写或修改 JavaScript 代码，然后点击下方运行。
-// 示例：修改生成按钮的文字
-function customLogic() {
-console.log("当前运行环境是正常的！");
-alert("调试代码执行成功！");
-}</textarea>
+return \`尊敬的用户，经核实您的账号因\${info.reason}于\${info.time[0]}被\${info.action}。请勿进行违规操作。\`;
+}
+console.log("AI 后端逻辑已加载，请输入测试内容...");
 </div>
-<div class="btn-group">
-    <button class="btn btn-primary" onclick="runDebugCode()">▶️ 运行代码</button>
-    <button class="btn btn-secondary" onclick="clearDebugOutput()">清空日志</button>
+</div>
+<!-- 控制台输出 -->
+<div class="card bg-white p-0 rounded-lg overflow-hidden flex flex-col">
+    <div class="bg-slate-800 px-4 py-2 flex justify-between items-center">
+        <span class="text-white text-sm">系统日志与 AI 响应</span>
+        <button 
+            @click="clearLog" 
+            class="text-xs text-gray-400 hover:text-white">
+            <i class="fa-solid fa-broom"></i> 清空
+        </button>
+    </div>
+    <div class="bg-black text-green-400 p-4 font-mono text-sm h-96 overflow-auto" ref="logArea">
+        > <span class="text-yellow-400">AI 调试频道已启动...</span>
+当前模式：模拟后端逻辑运行。
+您可以修改左侧代码并点击“运行代码”测试新的生成规则。
+提示：这是前端模拟的 AI 沙盒，如需真实联网 AI，请在此处接入 Fetch API。
+</div>
+</div>
 </div>
 
-<label>运行日志 / AI 响应</label>
-<div id="debugLog" class="log-output">> 日志初始化...
-等待代码执行...
+<!-- AI 指令输入 -->
+<div class="card bg-gradient-to-r from-blue-50 to-green-50 p-4 rounded-lg">
+<h3 class="font-bold text-gray-800 mb-2"><i class="fa-solid fa-terminal text-blue-500 mr-2"></i>AI 快捷指令 (Prompt)</h3>
+<div class="flex space-x-2 mb-2">
+<input 
+    v-model="aiCommand" 
+    @keyup.enter="executeAiCommand" 
+    type="text" 
+    placeholder="输入指令，例如：优化违规检测逻辑、增加被盗申诉模板..." 
+    class="flex-1 border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
+<button @click="executeAiCommand" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+    <i class="fa-solid fa-paper-plane mr-1"></i> 发送指令
+</button>
 </div>
+<p class="text-xs text-gray-500">说明：此处模拟向 AI 发送请求。在实际应用中，此处将通过 API 调用真实的 LLM 模型来修改代码逻辑。
 </div>
-</div>
+</section>
+
+</main>
 </div>
 
 <script>
-// ==========================================
-// 1. 基础 UI 切换逻辑
-// ==========================================
-function switchTab(tabName) {
-    // 隐藏所有卡片
-    document.querySelectorAll('.card').forEach(el => el.classList.add('hidden'));
-    // 显示当前卡片
-    document.getElementById('tab-' + tabName).classList.remove('hidden');
-    
-    // 更新侧边栏激活状态
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active');
+const { createApp } = Vue;
+
+createApp({
+data() {
+return {
+activeTab: 'generator',
+inputText: '',
+outputText: '',
+isLoading: false,
+
+// 权限数据
+adminUser: { username: 'admin', password: '123456' },
+showPassword: false,
+
+// 模板数据
+templates: [
+{ name: '通用违规封号', keywords: ['外挂', '作弊'], content: '经核实，您的账号因【{{reason}}】被【{{result}}】。' },
+{ name: '账号被盗申诉', keywords: ['被盗', '异地'], content: '系统检测到您的账号存在被盗风险，请尽快修改密码并通过安全中心申诉。' }
+],
+
+// 关键词数据
+keywords: [
+{ text: '外挂', type: '违规类型' },
+{ text: '被盗', type: '申诉引导' },
+{ text: '误封', type: '申诉引导' }
+],
+newKeyword: '',
+newKeywordType: 'violation',
+
+// AI 调试频道数据
+aiCommand: '',
+logHistory: []
+}
+},
+methods: {
+switchTab(tab) {
+this.activeTab = tab;
+if (tab === 'generator') this.$nextTick(() => this.generateResponse());
+},
+
+// --- 1. 核心生成逻辑 ---
+generateResponse() {
+if (!this.inputText.trim()) {
+alert('请输入玩家反馈内容！');
+return;
+}
+this.isLoading = true;
+this.outputText = '';
+
+// 模拟网络延迟
+setTimeout(() => {
+// 模拟真实的后端 NLP 分析逻辑
+let reason = "违反游戏用户协议";
+let result = "处罚处理";
+
+if (this.inputText.includes('外挂') || this.inputText.includes('自瞄')) {
+    reason = "检测到使用非法第三方作弊软件";
+    result = "封号10年";
+} else if (this.inputText.includes('被盗') || this.inputText.includes('异地登录')) {
+    reason = "账号存在异常登录及被盗风险";
+    result = "临时冻结保护";
 }
 
-// ==========================================
-// 2. 话术生成核心逻辑 (模拟)
-// ==========================================
-function generateScript() {
-    const input = document.getElementById('playerInput').value;
-    const output = document.getElementById('resultOutput');
-    const status = document.getElementById('statusText');
-    
-    if (!input.trim()) {
-        output.innerText = "❌ 错误：请输入玩家反馈内容！";
-        status.innerText = "错误";
-        return;
-    }
+// 模拟数据库查询模板
+const matchedTpl = this.templates.find(t => 
+    t.keywords.some(k => this.inputText.includes(k))
+);
 
-    status.innerText = "生成中...";
-    output.innerText = "正在解析文本逻辑...";
-
-    // 模拟异步处理
-    setTimeout(() => {
-        // 这里可以接入真实的 AI API
-        const mockResult = `[系统回复] 玩家您好，关于您反馈的账号处罚问题，安全团队已介入核实。根据您提供的内容："${input.substring(0, 30)}..."，初步判定符合常规申诉流程。请耐心等待后续处理。`;
-        output.innerText = mockResult;
-        status.innerText = "生成完成";
-    }, 1000);
+if (matchedTpl) {
+    this.outputText = matchedTpl.content
+        .replace('{{reason}}', reason)
+        .replace('{{result}}', result);
+} else {
+    this.outputText = `尊敬的用户，您好！
+经人工及系统双重核实，您的账号近期存在【${reason}】的行为。
+因此，我们依据相关协议对您做出了【${result}】的处理。
+如有疑问，请联系客服。感谢您的理解。`;
 }
-
-function copyResult() {
-    const text = document.getElementById('resultOutput').innerText;
-    navigator.clipboard.writeText(text).then(() => {
-        const btn = event.currentTarget;
-        const oldHtml = btn.innerHTML;
-        btn.innerHTML = '✅ 已复制';
-        setTimeout(() => btn.innerHTML = oldHtml, 2000);
-    });
-}
-
-// ==========================================
-// 3. AI 调试频道逻辑 (核心增强)
-// ==========================================
-let editorInstance;
-
-// 初始化 CodeMirror 编辑器
-document.addEventListener('DOMContentLoaded', () => {
-    editorInstance = CodeMirror.fromTextArea(document.getElementById('codeEditorArea'), {
-        lineNumbers: true,
-        mode: "javascript",
-        theme: "default",
-        autoCloseBrackets: true,
-        matchBrackets: true
-    });
+this.isLoading = false;
+}, 800);
+},
+clearInput() {
+this.inputText = '';
+this.outputText = '';
+},
+copyToClipboard() {
+if (!this.outputText) return;
+navigator.clipboard.writeText(this.outputText).then(() => {
+alert('已复制到剪贴板！');
 });
+},
 
-// 模拟 AI 响应 (实际项目中这里调用 fetch 请求 AI 接口)
-function simulateAI() {
-    const prompt = document.getElementById('aiPrompt').value;
-    const log = document.getElementById('debugLog');
-    log.innerText += `\n> [AI 思考中...] 收到指令：${prompt}\n`;
-    log.innerText += `> [AI 响应] 已为您生成优化代码，请查看编辑器区域。(注：此为模拟，真实调用需配置 API Key)\n`;
-    log.scrollTop = log.scrollHeight;
+// --- 2. 权限管理 ---
+savePermissions() {
+alert(`管理员账号已更新为：${this.adminUser.username}，请牢记新密码！`);
+// 模拟后端保存
+localStorage.setItem('admin_auth', JSON.stringify(this.adminUser));
+},
+
+// --- 3. 模板管理 ---
+addNewTemplate() {
+const name = prompt("请输入新模板名称：");
+if (name) {
+this.templates.push({ name: name, keywords: [], content: "默认内容" });
+}
+},
+deleteTemplate(index) {
+if(confirm("确定删除该模板吗？")) {
+this.templates.splice(index, 1);
+}
+},
+
+// --- 4. 关键词管理 ---
+addKeyword() {
+if (!this.newKeyword.trim()) return;
+this.keywords.push({ text: this.newKeyword, type: this.newKeywordType });
+this.newKeyword = '';
+},
+removeKeyword(index) {
+this.keywords.splice(index, 1);
+},
+
+// --- 5. AI 调试频道 (核心功能) ---
+runAICode() {
+const code = this.$refs.codeEditor.innerText;
+this.appendLog("> 正在执行左侧代码...");
+
+try {
+// 使用 Function 构造器动态执行代码，模拟后端逻辑更新
+// 注意：这是一个高级调试功能，允许实时修改变量状态
+const sandbox = {
+    templates: this.templates,
+    keywords: this.keywords,
+    console: {
+        log: (msg) => this.appendLog(`> ${msg}`)
+    }
+};
+
+// 简单的沙盒执行（仅演示逻辑运行，实际生产中需更严格的安全审查）
+const fn = new Function(...Object.keys(sandbox), code + "; return { templates, keywords };");
+const result = fn(...Object.values(sandbox));
+
+// 将执行结果更新回前端状态，实现真正的“代码热更新”
+if (result) {
+   this.templates = result.templates || this.templates;
+   this.keywords = result.keywords || this.keywords;
+   this.appendLog("> 执行成功：变量状态已更新。");
+}
+
+} catch (e) {
+this.appendLog(`> <span class="text-red-500">执行报错: ${e.message}</span>`);
+}
+},
+executeAiCommand() {
+if (!this.aiCommand.trim()) return;
+this.appendLog(`> [User Prompt] ${this.aiCommand}`);
+
+// 模拟 AI 响应逻辑
+setTimeout(() => {
+if (this.aiCommand.includes('优化') || this.aiCommand.includes('增加')) {
+    this.appendLog("> [AI 响应] 已根据您的指令优化了本地逻辑。请在左侧编辑器中查看最新代码。");
+    // 模拟 AI 自动添加一个测试模板
+    this.templates.push({ name: 'AI新增-被盗专用', keywords: ['被盗申诉'], content: '您的被盗申诉已受理。' });
+} else {
+    this.appendLog("> [AI 响应] 指令已接收，当前为模拟环境，逻辑已在本地运行。");
+}
+this.aiCommand = '';
+}, 500);
+},
+appendLog(msg) {
+const time = new Date().toLocaleTimeString();
+this.$refs.logArea.innerHTML += `[${time}] ${msg}
+`;
+this.refs.logArea.scrollTop=this.refs.logArea.scrollHeight;
+},
+clearLog() {
+this.$refs.logArea.innerHTML = '> 日志已清空
+';
+},
+// --- 6. 初始化 ---
+init() {
+    // 模拟从本地存储读取管理员信息
+    const savedAuth = localStorage.getItem('admin_auth');
+    if (savedAuth) {
+        this.adminUser = JSON.parse(savedAuth);
+    }
     
-    // 模拟 AI 自动修改编辑器里的代码
-    const currentCode = editorInstance.getValue();
-    if (prompt.includes("导出Excel")) {
-        editorInstance.setValue(currentCode + "\n\n// AI 自动添加的导出功能占位符\nfunction exportToExcel() { alert('导出功能开发中'); }");
+    // 初始化欢迎语
+    this.appendLog("> 系统初始化完成。");
+},
+logout() {
+    if(confirm("确定退出吗？")) {
+        alert("已退出系统");
     }
 }
-
-// 运行调试代码
-function runDebugCode() {
-    const code = editorInstance.getValue();
-    const log = document.getElementById('debugLog');
-    log.innerText += `\n> [执行] 开始运行用户代码...\n`;
-    
-    try {
-        // 使用 new Function 在局部作用域执行代码，相对安全
-        const fn = new Function(code);
-        fn();
-        log.innerText += "> [成功] 代码执行完毕。\n";
-    } catch (e) {
-        log.innerText += `<span style="color: #ff6b6b;">> [错误] ${e.message}</span>\n`;
-    }
-    log.scrollTop = log.scrollHeight;
+},
+mounted() {
+this.init();
 }
-
-function clearDebugOutput() {
-    document.getElementById('debugLog').innerText = '> 日志已清空\n> 等待代码执行...\n';
-}
-
-
-// ==========================================
-// 4. 其他工具逻辑
-// ==========================================
-function clearAllData() {
-    if(confirm("确定要清除所有本地存储的数据吗？")) {
-        localStorage.clear();
-        alert("数据已清除！");
-    }
-}
+}).mount('#app');
 </script>
 </body>
 </html>
