@@ -1,271 +1,470 @@
+html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>智能话术生成系统</title>
 <style>
-:root{--p:#007bff;--d:#dc3545;--w:220px;}
-body{font-family:"Microsoft YaHei",sans-serif;margin:0;background:#f4f7f9;color:#333;}
-.hidden{display:none!important;}
-#lp{display:flex;justify-content:center;align-items:center;height:100vh;}
-.lb{background:#fff;padding:40px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.1);width:300px;}
-.lb h2{text-align:center;margin-bottom:20px;}
-.lb input{width:100%;padding:10px;margin-bottom:15px;border:1px solid #ddd;border-radius:4px;box-sizing:border-box;}
-.lb button{width:100%;padding:10px;background:var(--p);color:#fff;border:none;border-radius:4px;cursor:pointer;}
-.em{color:red;font-size:12px;text-align:center;margin-top:10px;}
-#app{display:flex;min-height:100vh;}
-.sb{width:var(--w);background:#2c3e50;color:#fff;padding-top:20px;position:fixed;height:100%;}
-.sb h3{text-align:center;margin:0 0 20px;padding-bottom:15px;border-bottom:1px solid #3a506b;}
-.sb ul{list-style:none;padding:0;margin:0;}
-.sb li a{display:block;padding:15px 20px;color:#b8c7ce;text-decoration:none;cursor:pointer;}
-.sb li a:hover,.sb li a.act{background:var(--p);color:#fff;}
-.ct{flex:1;margin-left:var(--w);padding:20px;}
-.cd{background:#fff;border-radius:8px;padding:20px,box-shadow:0 2px 10px rgba(0,0,0,.05),margin-bottom:20px;}
-.cd h2{margin-top:0;border-bottom:1px solid #eee,padding-bottom:10px;}
-ta{width:100%,height:120px,border:1px solid #ddd,border-radius:4px,padding:10px,box-sizing:border-box,font-size:14px;}
-bt{padding:10px 15px,background:var(--p),color:#fff,border:none,border-radius:4px,cursor:pointer,margin-right:5px;}
-bt.d{background:var(--d);}
-tb{width:100%,border-collapse:collapse,margin-top:15px;}
-th,td{border:1px solid #eee,padding:10px,text-align:left;}
-th{background:#f8f9fa;}
-.lo{position:absolute,bottom:20px,left:20px,right:20px,background:#34495e;}
-#do{background:#272822,color:#f8f8f2,padding:15px,border-radius:4px,white-space:pre-wrap,min-height:100px;}
+:root {
+--primary-color: #007bff;
+--danger-color: #dc3545;
+--sidebar-width: 220px;
+--header-height: 60px;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Microsoft YaHei", sans-serif;
+    background-color: #f4f7f9;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* 登录页面样式 */
+#login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #fff;
+}
+
+.login-box {
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    width: 320px;
+    text-align: center;
+}
+
+.login-box h2 {
+    margin-bottom: 25px;
+    color: #333;
+}
+
+.login-box input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+.login-box button:hover {
+    background: #0056b3;
+}
+
+.error-msg {
+    color: var(--danger-color);
+    font-size: 12px;
+    margin-top: 10px;
+    min-height: 20px;
+}
+
+/* 主应用容器 */
+#app-container {
+    display: none;
+    flex: 1;
+    flex-direction: row;
+    width: 100%;
+}
+
+/* 侧边栏 */
+.sidebar {
+    width: var(--sidebar-width);
+    background: #2c3e50;
+    color: #fff;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+.sidebar-header {
+    text-align: center;
+    padding: 0 20px 20px;
+    border-bottom: 1px solid #3a506b;
+    margin-bottom: 20px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li a {
+    display: block;
+    padding: 15px 25px;
+    color: #b8c7ce;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.sidebar li a:hover,
+.sidebar li a.active {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.logout-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+/* 主内容区 */
+.main-content {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    padding: 30px;
+    overflow-y: auto;
+    background: #f4f7f9;
+}
+
+.content-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.content-card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+textarea {
+    width: 100%;
+    height: 150px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    font-size: 14px;
+    resize: vertical;
+    margin-bottom: 15px;
+    font-family: inherit;
+}
+
+.btn-group {
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: opacity 0.3s;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button.secondary {
+    background: #6c757d;
+}
+
+button.danger {
+    background: var(--danger-color);
+}
+
+.result-area {
+    background: #f8f9fa;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 20px;
+    min-height: 200px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 15px;
+}
+
+.copy-btn {
+    margin-top: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #eee;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background: #f8f9fa;
+}
+
+.hidden {
+    display: none !important;
+}
 </style>
 </head>
 <body>
+<!-- 登录模块 -->
+<div id="login-page">
+    <div class="login-box">
+        <h2>后台登录</h2>
+        <input type="password" id="password-input" placeholder="请输入管理员密码">
+        <button onclick="handleLogin()">进入系统</button>
+        <div class="error-msg" id="login-error"></div>
+    </div>
+</div>
 
-<div id="lp"><div class="lb"><h2>后台登录</h2><input type="password" id="pi" placeholder="请输入密码"><button onclick="lg()">进入系统</button><p id="em" class="em"></p></div></div>
+<!-- 主应用模块 -->
+<div id="app-container">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h3>话术系统</h3>
+        </div>
+        <ul>
+            <li><a href="#" class="nav-link active" data-target="generator">话术生成器</a></li>
+            <li><a href="#" class="nav-link" data-target="permissions">权限管理</a></li>
+            <li><a href="#" class="nav-link" data-target="templates">模板管理</a></li>
+            <li><a href="#" class="nav-link" data-target="keywords">关键词管理</a></li>
+            <li><a href="#" class="nav-link" data-target="debug">调试频道</a></li>
+        </ul>
+        <div class="logout-btn">
+            <button class="danger" onclick="handleLogout()" style="width: calc(100% - 40px); margin: 0 20px;">退出登录</button>
+        </div>
+    </aside>
 
-<div id="app" class="hidden">
-<div class="sb">
-<h3>话术系统</h3>
-<ul>
-<li><a data-p="gen" class="act">话术生成器</a></li>
-<li><a data-p="adm">权限管理</a></li>
-<li><a data-p="tpl">模板管理</a></li>
-<li><a data-p="kw">关键词管理</a></li>
-<li><a data-p="dbg">调试频道</a></li>
-</ul>
-<button class="lo" onclick="location.reload()">退出登录</button>
-</div>
-<div class="ct">
-<div id="gen" class="page">
-<h1>话术生成器</h1>
-<div class="cd"><ta id="inp" placeholder="粘贴数据..."></ta><bt onclick="gr()">生成话术</bt></div>
-<div class="cd"><h2>生成结果</h2><div id="out" style="white-space:pre-wrap;line-height:1.8;"></div><bt onclick="cp()">复制</bt></div>
-</div>
-<div id="adm" class="page hidden">
-<h1>权限管理</h1>
-<div class="cd"><h2>添加管理员</h2><input id="np" type="password" placeholder="新密码" style="width:200px;padding:8px;"><bt onclick="aa()">添加</bt></div>
-<div class="cd"><h2>管理员列表</h2><table id="at"></table></div>
-</div>
-<div id="tpl" class="page hidden">
-<h1>模板管理</h1>
-<div class="cd"><h2>新增/编辑模板</h2><input id="tn" placeholder="模板名称" style="width:100%;padding:8px;margin-bottom:10px;"><ta id="tc" placeholder="用 {{time}} {{reason}} {{result}} 占位"></ta><bt onclick="st()">保存模板</bt></div>
-<div class="cd"><h2>模板列表</h2><table id="tt"></table></div>
-</div>
-<div id="kw" class="page hidden">
-<h1>关键词管理</h1>
-<div class="cd"><h2>新增关键词</h2><input id="ki" placeholder="关键词" style="width:200px;padding:8px;"><select id="ts" style="padding:8px;"></select><bt onclick="ak()">关联模板</bt></div>
-<div class="cd"><h2>关键词列表</h2><table id="kt"></table></div>
-</div>
-<div id="dbg" class="page hidden">
-<h1>调试频道</h1>
-<div class="cd"><h2>模拟输入</h2><ta id="di" placeholder="测试数据..."></ta><bt onclick="rd()">开始调试</bt></div>
-<div class="cd"><h2>调试输出</h2><div id="do">等待输入...</div></div>
-</div>
-</div>
+    <main class="main-content">
+        <!-- 话术生成器 -->
+        <div id="generator" class="content-section content-card">
+            <h2>话术生成器</h2>
+            <div>
+                <label>输入玩家反馈/处罚记录：</label>
+                <textarea id="input-text" placeholder="请粘贴玩家的处罚通知或相关聊天记录..."></textarea>
+            </div>
+            <div class="btn-group">
+                <button onclick="generateScript()">生成话术</button>
+                <button class="secondary" onclick="clearAll()">清空重置</button>
+            </div>
+            
+            <div>
+                <label>生成结果：</label>
+                <div class="result-area" id="result-output">在这里显示生成的话术...</div>
+                <button class="copy-btn" onclick="copyResult()">复制结果</button>
+            </div>
+        </div>
+
+        <!-- 其他占位模块 -->
+        <div id="permissions" class="content-section content-card hidden">
+            <h2>权限管理</h2>
+            管理员账号密码存储在浏览器本地，请修改代码中的默认密码。
+        </div>
+        <div id="templates" class="content-section content-card hidden">
+            <h2>模板管理</h2>
+            此处可编辑回复模板。
+        </div>
+        <div id="keywords" class="content-section content-card hidden">
+            <h2>关键词管理</h2>
+            此处可配置触发特定模板的关键词。
+        </div>
+        <div id="debug" class="content-section content-card hidden">
+            <h2>调试频道</h2>
+            用于测试输入输出逻辑。
+        </div>
+    </main>
 </div>
 
 <script>
-// 核心修复：确保默认密码始终有效
-const DEF_PWD = "123456";
-let admins = [], tpls = [], kws = [];
+    // --- 核心配置 ---
+    const DEFAULT_PASSWORD = "123456"; // 默认密码
 
-function init() {
-    // 初始化管理员密码（强制重置为默认）
-    try {
-        admins = JSON.parse(localStorage.getItem("admins"));
-        if (!Array.isArray(admins) || admins.length === 0) {
-            admins = [DEF_PWD];
-            localStorage.setItem("admins", JSON.stringify(admins));
+    // --- 预置数据 ---
+    const keywords = [
+        { keyword: "封号", template: "ban_template" },
+        { keyword: "禁赛", template: "match_template" },
+        { keyword: "被盗", template: "stolen_template" }
+    ];
+
+    const templates = [
+        {
+            name: "ban_template",
+            content: "亲爱的用户您好，关于您反馈的账号处罚问题，我非常重视，已第一时间向安全团队进行了核实。安全团队复查您的账号是由于【{{reason}}】导致于【{{time}}】被系统处罚【{{result}}】，账号的封停关系到玩家的切身利益，安全团队对账号进行了反复核实，确认违规属实，无法提前解封。建议您后续保持良好的游戏行为，维护健康绿色游戏环境，感谢您的理解与支持。"
+        },
+        {
+            name: "match_template",
+            content: "您好，经系统核实，您的账号在【{{time}}】因【{{reason}}】触发了违规机制，已被系统处以【{{result}}】的处罚。该判定由系统严格自动执行，无法人工撤销。请您耐心等待处罚期结束，后续请遵守游戏规则。"
+        },
+        {
+            name: "stolen_template",
+            content: "关于您反馈的账号疑似被盗问题，我们非常理解您的心情。目前系统设有严密的安全保护机制，建议您尝试通过【微信服务号“腾讯游戏安全中心”-自助服务-被盗服务】进行申诉。同时请务必加强账号保护，不要外借或共享，避免造成不必要的损失。"
         }
-    } catch (e) {
-        admins = [DEF_PWD];
-        localStorage.setItem("admins", JSON.stringify(admins));
-    }
+    ];
 
-    // 初始化模板（默认包含标准封号、小黑屋等）
-    try {
-        tpls = JSON.parse(localStorage.getItem("tpls"));
-        if (!Array.isArray(tpls) || tpls.length === 0) {
-            tpls = [
-                { name: "标准封号", content: "亲爱的用户您好，关于您反馈的账号处罚问题，我非常重视，已第一时间向安全团队进行了核实，安全团队复查您的账号是由于【{{reason}}】导致于【{{time}}】被系统处罚【{{result}}】，账号的封停关系到玩家的切身利益，安全团队对账号进行了反复核实，确认违规属实，无法提前解封。建议您后续保持良好的游戏行为，维护健康绿色游戏环境，感谢您的理解与支持。" },
-                { name: "恶意行为小黑屋", content: "亲爱的用户，您好，关于您反馈的游戏限制问题，我已第一时间向游戏安全团队进行了核实，确认到您的账号在【{{time}}】开启相应限制，无法即刻解除。若在游戏中有多次行为违规则会被移入小黑屋，期间只能参与经典匹配海岛4排玩法，禁止组队，且只能匹配到同是小黑屋的玩家，同时不计算积分和战绩。请留意，若小黑屋期间再次违规，将重设小黑屋时间。和平精英官方一直致力于打造公平绿色的游戏环境，系统通过腾讯游戏安全团队提供的安全大数据和人工智能技术，会自动识别出存在过影响对局公平性的玩家，将其移入小黑屋，还请遵守游戏规则，保持良好的游戏行为，共同维护公平游戏环境，完成对应时长后系统会自动解除。感谢您的理解与支持。" },
-                { name: "匹配小黑屋", content: "亲爱的用户，您好，关于您反馈的游戏限制问题，我已第一时间向游戏安全团队进行了核实，确认到您的账号在【{{time}}】开启相应限制，无法即刻解除。若在游戏中有多次行为违规则会被移入小黑屋，期间只能参与经典匹配海岛4排玩法，禁止组队，且只能匹配到同是小黑屋的玩家，同时不计算积分和战绩。请留意，若小黑屋期间再次违规，将重设小黑屋时间。和平精英官方一直致力于打造公平绿色的游戏环境，系统通过腾讯游戏安全团队提供的安全大数据和人工智能技术，会自动识别出存在过影响对局公平性的玩家，将其移入小黑屋，目前无法进行解除，还请遵守游戏规则，保持良好的游戏行为，共同维护公平游戏环境，完成对应时长后系统会自动解除。感谢您的理解与支持。" }
-            ];
-            localStorage.setItem("tpls", JSON.stringify(tpls));
+    // --- 工具函数 ---
+    function parseLog(data) {
+        // 简单的日志解析逻辑
+        const timeMatch = data.match(/(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2})/) || data.match(/(\d{4}-\d{2}-\d{2})/);
+        const time = timeMatch ? timeMatch[1] : "近期";
+        
+        let reason = "违规行为";
+        const reasonKeywords = ["检测到", "使用", "修改", "传播", "违反", "存在", "行为"];
+        const lines = data.split("\n").map(l => l.trim()).filter(l => l);
+        
+        for (let i = lines.length - 1; i >= 0; i--) {
+            if (reasonKeywords.some(k => lines[i].includes(k))) {
+                reason = lines[i];
+                break;
+            }
         }
-    } catch (e) {
-        tpls = [{ name: "标准封号", content: "亲爱的用户您好，关于您反馈的账号处罚问题，我非常重视，已第一时间向安全团队进行了核实，安全团队复查您的账号是由于【{{reason}}】导致于【{{time}}】被系统处罚【{{result}}】，账号的封停关系到玩家的切身利益，安全团队对账号进行了反复核实，确认违规属实，无法提前解封。建议您后续保持良好的游戏行为，维护健康绿色游戏环境，感谢您的理解与支持。" }];
-        localStorage.setItem("tpls", JSON.stringify(tpls));
+        
+        const result = data.includes("封号") ? "封号" : data.includes("禁赛") ? "禁赛" : "处罚";
+        
+        return { time, reason, result };
     }
 
-    // 初始化关键词（默认包含小黑屋关联）
-    try {
-        kws = JSON.parse(localStorage.getItem("kws"));
-        if (!Array.isArray(kws) || kws.length === 0) {
-            kws = [
-                { keyword: "恶意行为小黑屋", template: "恶意行为小黑屋" },
-                { keyword: "匹配小黑屋", template: "匹配小黑屋" }
-            ];
-            localStorage.setItem("kws", JSON.stringify(kws));
+    // --- 业务逻辑 ---
+    function generateScript() {
+        const input = document.getElementById('input-text').value;
+        if (!input.trim()) {
+            alert("请输入内容");
+            return;
         }
-    } catch (e) {
-        kws = [{ keyword: "恶意行为小黑屋", template: "恶意行为小黑屋" }];
-        localStorage.setItem("kws", JSON.stringify(kws));
+        
+        const parsed = parseLog(input);
+        let matchedTemplate = templates[0]; // 默认模板
+        
+        // 匹配关键词
+        for (const kw of keywords) {
+            if (input.includes(kw.keyword)) {
+                const found = templates.find(t => t.name === kw.template);
+                if (found) {
+                    matchedTemplate = found;
+                    break;
+                }
+            }
+        }
+
+        // 替换占位符
+        let result = matchedTemplate.content
+            .replace("{{time}}", parsed.time)
+            .replace("{{reason}}", parsed.reason)
+            .replace("{{result}}", parsed.result);
+
+        document.getElementById('result-output').innerText = result;
     }
-}
 
-// 登录逻辑（强制比对默认密码）
-function lg() {
-    const pwd = document.getElementById("pi").value;
-    const admins = JSON.parse(localStorage.getItem("admins"));
-    if (admins.includes(pwd)) {
-        document.getElementById("lp").classList.add("hidden");
-        document.getElementById("app").classList.remove("hidden");
-        ra(); // 渲染表格
-    } else {
-        document.getElementById("em").innerText = "密码错误，默认密码：" + DEF_PWD;
+    function clearAll() {
+        document.getElementById('input-text').value = '';
+        document.getElementById('result-output').innerText = '在这里显示生成的话术...';
     }
-}
 
-// 页面切换
-document.querySelectorAll(".sb a").forEach(a => {
-    a.onclick = () => {
-        document.querySelectorAll(".sb a").forEach(x => x.classList.remove("act"));
-        a.classList.add("act");
-        document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
-        document.getElementById(a.dataset.p).classList.remove("hidden");
-    };
-});
-
-// 渲染表格
-function ra() {
-    // 管理员列表
-    document.getElementById("at").innerHTML = "<tr><th>密码</th><th>操作</th></tr>" +
-        admins.map((p, i) => `<tr><td>${p}</td><td><bt class="d" onclick="da(${i})">删除</bt></td></tr>`).join("");
-    // 模板列表
-    document.getElementById("tt").innerHTML = "<tr><th>名称</th><th>操作</th></tr>" +
-        tpls.map((t, i) => `<tr><td>${t.name}</td><td><bt onclick="et(${i})">编辑</bt> <bt class="d" onclick="dt(${i})">删除</bt></td></tr>`).join("");
-    // 关键词列表
-    document.getElementById("kt").innerHTML = "<tr><th>关键词</th><th>关联模板</th><th>操作</th></tr>" +
-        kws.map((k, i) => `<tr><td>${k.keyword}</td><td>${k.template}</td><td><bt class="d" onclick="dk(${i})">删除</bt></td></tr>`).join("");
-    // 模板选择框
-    document.getElementById("ts").innerHTML = tpls.map(t => `<option value="${t.name}">${t.name}</option>`).join("");
-}
-
-// 权限管理
-function aa() {
-    const p = document.getElementById("np").value;
-    if (p.length < 6) { alert("密码至少6位"); return; }
-    admins.push(p);
-    localStorage.setItem("admins", JSON.stringify(admins));
-    ra();
-    document.getElementById("np").value = "";
-}
-
-function da(i) {
-    admins.splice(i, 1);
-    localStorage.setItem("admins", JSON.stringify(admins));
-    ra();
-}
-
-// 模板管理
-function st() {
-    const n = document.getElementById("tn").value;
-    const c = document.getElementById("tc").value;
-    if (!n || !c) { alert("不能为空"); return; }
-    const idx = tpls.findIndex(t => t.name === n);
-    if (idx > -1) tpls[idx].content = c;
-    else tpls.push({ name: n, content: c });
-    localStorage.setItem("tpls", JSON.stringify(tpls));
-    ra();
-}
-
-function et(i) {
-    document.getElementById("tn").value = tpls[i].name;
-    document.getElementById("tc").value = tpls[i].content;
-}
-
-function dt(i) {
-    tpls.splice(i, 1);
-    localStorage.setItem("tpls", JSON.stringify(tpls));
-    ra();
-}
-
-// 关键词管理
-function ak() {
-    const k = document.getElementById("ki").value;
-    const t = document.getElementById("ts").value;
-    if (!k || !t) { alert("请填写关键词并选择模板"); return; }
-    kws.push({ keyword: k, template: t });
-    localStorage.setItem("kws", JSON.stringify(kws));
-    ra();
-    document.getElementById("ki").value = "";
-}
-
-function dk(i) {
-    kws.splice(i, 1);
-    localStorage.setItem("kws", JSON.stringify(kws));
-    ra();
-}
-
-// 核心逻辑：生成话术
-function parse(d) {
-    const tm = d.match(/(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2})/) || d.match(/(\d{4}-\d{2}-\d{2})/);
-    const time = tm ? tm[1] : "";
-    const lines = d.split("\n").map(l => l.trim()).filter(l => l);
-    let reason = "";
-    const rkeys = ["检测到", "使用", "修改", "传播", "违反", "存在", "行为"];
-    for (let i = lines.length - 1; i >= 0; i--) {
-        if (rkeys.some(k => lines[i].includes(k))) { reason = lines[i]; break; }
+    function copyResult() {
+        const text = document.getElementById('result-output').innerText;
+        if (!text || text === '在这里显示生成的话术...') return;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            alert('已复制到剪贴板！');
+        }).catch(err => {
+            console.error('复制失败: ', err);
+            alert('复制失败，请手动复制。');
+        });
     }
-    const resLine = lines.find(l => l.includes("封号") || l.includes("禁赛") || l.includes("小黑屋"));
-    return { time, reason, result: resLine || "" };
-}
 
-function gr() {
-    const inp = document.getElementById("inp").value;
-    document.getElementById("out").innerText = go(inp);
-}
-
-function rd() {
-    const inp = document.getElementById("di").value;
-    document.getElementById("do").innerText = go(inp);
-}
-
-function go(d) {
-    const { time, reason, result } = parse(d);
-    const kw = kws.find(k => d.includes(k.keyword));
-    if (kw) {
-        const tpl = tpls.find(t => t.name === kw.template);
-        if (tpl) return tpl.content.replace("{{time}}", time).replace("{{reason}}", reason).replace("{{result}}", result);
+    // --- 页面交互逻辑 ---
+    function handleLogin() {
+        const pwd = document.getElementById('password-input').value;
+        const errorEl = document.getElementById('login-error');
+        
+        if (pwd === DEFAULT_PASSWORD) {
+            // 登录成功，保存到 sessionStorage 防止刷新后退出
+            sessionStorage.setItem('isLoggedIn', 'true');
+            showApp();
+        } else {
+            errorEl.innerText = "密码错误，请重新输入";
+            document.getElementById('password-input').value = '';
+        }
     }
-    let out = `亲爱的用户您好，关于您反馈的账号处罚问题，我非常重视，已第一时间向安全团队进行了核实，安全团队复查您的账号是由于【${reason}】导致于【${time}】被系统处罚【${result}】，账号的封停关系到玩家的切身利益，安全团队对账号进行了反复核实，确认违规属实，无法提前解封。`;
-    if (d.includes("引导被盗")) out += "\n若账号存在被盗风险，可尝试通过【微信服务号“腾讯游戏安全中心”-自助服务-被盗服务】进行自助申诉。建议您后续注意保护账号安全，不要外借共享，避免造成不必要的损失，感谢您的理解与支持。";
-    else if (d.includes("微信被盗")) out += "\n为您向安全团队了解到，目前微信授权及登录陌生设备都需经过多重验证，暂无被盗申诉服务，无法进行相应核实。建议您后续注意保护账号安全，不要外借共享，避免造成损失，感谢您的理解与支持。";
-    else out += "\n建议您后续保持良好的游戏行为，维护健康绿色游戏环境，感谢您的理解与支持。";
-    return out;
-}
 
-function cp() {
-    navigator.clipboard.writeText(document.getElementById("out").innerText);
-    alert("已复制！");
-}
+    function handleLogout() {
+        sessionStorage.removeItem('isLoggedIn');
+        location.reload(); // 刷新页面回到登录页
+    }
 
-// 启动初始化
-init();
+    function showApp() {
+        document.getElementById('login-page').style.display = 'none';
+        document.getElementById('app-container').style.display = 'flex';
+    }
+
+    function initNavigation() {
+        const links = document.querySelectorAll('.nav-link');
+        links.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 更新导航激活状态
+                links.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 显示对应内容
+                const targetId = this.getAttribute('data-target');
+                document.querySelectorAll('.content-section').forEach(sec => {
+                    sec.classList.add('hidden');
+                });
+                document.getElementById(targetId).classList.remove('hidden');
+            });
+        });
+    }
+
+    // --- 初始化 ---
+    document.addEventListener('DOMContentLoaded', function() {
+        initNavigation();
+        
+        // 检查登录状态
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            showApp();
+        }
+        
+        // 支持按 Enter 键登录
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+    });
 </script>
 </body>
 </html>
