@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>智能话术生成系统</title>
+<style>
+:root{--p:#007bff;--d:#dc3545;--w:220px;}
+body{font-family:"Microsoft YaHei",sans-serif;margin:0;background:#f4f7f9;color:#333;}
+.hidden{display:none!important;}
+#lp{display:flex;justify-content:center;align-items:center;height:100vh;}
+.lb{background:#fff;padding:40px;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,.1);width:300px;}
+.lb h2{text-align:center;margin-bottom:20px;}
+.lb input{width:100%;padding:10px;margin-bottom:15px;border:1px solid #ddd;border-radius:4px;box-sizing:border-box;}
+.lb button{width:100%;padding:10px;background:var(--p);color:#fff;border:none;border-radius:4px;cursor:pointer;}
+.em{color:red;font-size:12px;text-align:center;margin-top:10px;}
+#app{display:flex;min-height:100vh;}
+.sb{width:var(--w);background:#2c3e50;color:#fff;padding-top:20px;position:fixed;height:100%;}
+.sb h3{text-align:center;margin:0 0 20px;padding-bottom:15px;border-bottom:1px solid #3a506b;}
+.sb ul{list-style:none;padding:0;margin:0;}
+.sb li a{display:block;padding:15px 20px;color:#b8c7ce;text-decoration:none;cursor:pointer;}
+.sb li a:hover,.sb li a.act{background:var(--p);color:#fff;}
+.ct{flex:1;margin-left:var(--w);padding:20px;}
+.cd{background:#fff;border-radius:8px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.05);margin-bottom:20px;}
+.cd h2{margin-top:0;border-bottom:1px solid #eee;padding-bottom:10px;}
+ta{width:100%;height:120px;border:1px solid #ddd;border-radius:4px;padding:10px;box-sizing:border-box;font-size:14px;}
+bt{padding:10px 15px;background:var(--p);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-right:5px;}
+bt.d{background:var(--d);}
+tb{width:100%;border-collapse:collapse;margin-top:15px;}
+th,td{border:1px solid #eee;padding:10px;text-align:left;}
+th{background:#f8f9fa;}
+.lo{position:absolute;bottom:20px;left:20px;right:20px;background:#34495e;}
+#do{background:#272822;color:#f8f8f2;padding:15px;border-radius:4px;white-space:pre-wrap;min-height:100px;}
+</style>
+</head>
+<body>
+
+<div id="lp"><div class="lb"><h2>后台登录</h2><input type="password" id="pi" placeholder="请输入密码"><button onclick="lg()">进入系统</button><p id="em" class="em"></p></div></div>
+
+<div id="app" class="hidden">
+<div class="sb">
+<h3>话术系统</h3>
+<ul>
+<li><a data-p="gen" class="act">话术生成器</a></li>
+<li><a data-p="adm">权限管理</a></li>
+<li><a data-p="tpl">模板管理</a></li>
+<li><a data-p="kw">关键词管理
